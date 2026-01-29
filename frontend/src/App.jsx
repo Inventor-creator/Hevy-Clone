@@ -1,35 +1,74 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import api from "./services/api";
+import LoginPage from "./pages/LoginPage.jsx";
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+    useLocation,
+    Navigate,
+} from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+function RequireAuth({ children, requiredRole, requiredLevel }) {
+    const location = useLocation();
+    const [checking, setChecking] = useState(true);
+    const [valid, setValid] = useState(false);
+    let id = localStorage.getItem("userId");
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        // Get user info from localStorage
+        //mail
+        const username = localStorage.getItem("user");
+        let role = localStorage.getItem("role");
+        let id = localStorage.getItem("userId");
+        let accessLvl = localStorage.getItem("accessLevel");
+        //checks if the local storage username and role is valid or not
+        api.post("/checkValid", {
+            name: username,
+            role: role,
+            id: id,
+            accessLevel: accessLvl,
+        })
+            .then(() => {
+                // If a requiredRole is specified, check if user has it
+                if (requiredRole && role != requiredRole) {
+                    console.log("Role mismatch");
+                    setValid(false);
+                } else {
+                    setValid(true);
+                }
+                setChecking(false);
+
+                if (accessLvl && accessLvl != requiredLevel) {
+                    console.log("Access Permission mismatch");
+                    setValid(false);
+                } else {
+                    setValid(true);
+                }
+                setChecking(false);
+            })
+            .catch(() => {
+                setValid(false);
+                setChecking(false);
+            });
+    }, [location, requiredRole, id, requiredLevel]);
+
+    if (checking) return <div>Checking authentication...</div>;
+    if (!valid) return <Navigate to="/login" replace />;
+    return children;
 }
 
-export default App
+function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+            </Routes>
+        </BrowserRouter>
+    );
+}
+
+export default App;
