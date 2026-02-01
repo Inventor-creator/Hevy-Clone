@@ -5,7 +5,7 @@ body {
 
 #root {
     padding: 2rem;
-    padding-top: 70px; /* Adjust if your navbar height changes */
+    padding-top: 70px;
     text-align: center;
 }
 

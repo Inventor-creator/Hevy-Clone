@@ -1,9 +1,10 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect } from "react";
+import Navbar from "./components/Navbar.jsx";
 import "./App.css";
 import api from "./services/api";
 import LoginPage from "./pages/LoginPage.jsx";
+
 import {
     BrowserRouter,
     Routes,
@@ -64,6 +65,7 @@ function RequireAuth({ children, requiredRole, requiredLevel }) {
 function App() {
     return (
         <BrowserRouter>
+            <Navbar />
             <Routes>
                 <Route path="/" element={<LoginPage />} />
             </Routes>
