@@ -68,6 +68,7 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<LoginPage />} />
+                <Route path="/idk" element={<p> fuck yeah</p>} />
             </Routes>
         </BrowserRouter>
     );

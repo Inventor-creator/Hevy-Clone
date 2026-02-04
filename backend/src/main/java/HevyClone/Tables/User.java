@@ -9,25 +9,15 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 public class User {
     @Id
+    @Column(name = "userId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
+    @Column(name = "email")
     private String email;
+
+
+    @Column(name = "name")
     private String name;
-    private String picture;
 
-    @Column(unique = true)
-    private String googleId;
-
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    // getters and setters
-}
-
-enum AuthProvider {
-    LOCAL, GOOGLE
 }
