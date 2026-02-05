@@ -26,10 +26,10 @@ public class JwtUtil {
     }
 
 
-    public String generateToken(String userId, String email) {
+    public String generateToken(Long userId, String email) {
         return Jwts.builder()
-                .setSubject(userId)
-                .claim("email", email)
+                .setSubject(email)
+                .claim("userId", userId)
 
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + exp))

@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar.jsx";
 import "./App.css";
 import api from "./services/api";
 import LoginPage from "./pages/LoginPage.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
 
 import {
     BrowserRouter,
@@ -69,6 +70,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/idk" element={<p> fuck yeah</p>} />
+                <Route path="/shit" element={<ErrorPage />} />
             </Routes>
         </BrowserRouter>
     );
