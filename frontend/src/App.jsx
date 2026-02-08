@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useEffect } from "react";
 import Navbar from "./components/Navbar.jsx";
 import "./App.css";
 import api from "./services/api";
 import LoginPage from "./pages/LoginPage.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import { AuthContext } from "./util/AuthContext.jsx";
 
 import {
     BrowserRouter,
@@ -14,65 +16,51 @@ import {
     Navigate,
 } from "react-router-dom";
 
-function RequireAuth({ children, requiredRole, requiredLevel }) {
+function RequireAuth({ children, requiredRole }) {
     const location = useLocation();
-    const [checking, setChecking] = useState(true);
+    const { user, setUser, loading, setLoading } = useContext(AuthContext);
     const [valid, setValid] = useState(false);
-    let id = localStorage.getItem("userId");
+
+    const role = user.role;
 
     useEffect(() => {
-        // Get user info from localStorage
-        //mail
-        const username = localStorage.getItem("user");
-        let role = localStorage.getItem("role");
-        let id = localStorage.getItem("userId");
-        let accessLvl = localStorage.getItem("accessLevel");
-        //checks if the local storage username and role is valid or not
-        api.post("/checkValid", {
-            name: username,
-            role: role,
-            id: id,
-            accessLevel: accessLvl,
-        })
-            .then(() => {
-                // If a requiredRole is specified, check if user has it
-                if (requiredRole && role != requiredRole) {
-                    console.log("Role mismatch");
-                    setValid(false);
-                } else {
-                    setValid(true);
-                }
-                setChecking(false);
+        setLoading(true);
+        if (requiredRole && role != requiredRole) {
+            console.log("Role mismatch");
+            setValid(false);
+        } else {
+            setValid(true);
+        }
 
-                if (accessLvl && accessLvl != requiredLevel) {
-                    console.log("Access Permission mismatch");
-                    setValid(false);
-                } else {
-                    setValid(true);
-                }
-                setChecking(false);
-            })
-            .catch(() => {
-                setValid(false);
-                setChecking(false);
-            });
-    }, [location, requiredRole, id, requiredLevel]);
+        setLoading(false);
+    }, [requiredRole, user, loading, role]);
 
-    if (checking) return <div>Checking authentication...</div>;
+    if (loading) return <div>Checking authentication...</div>;
     if (!valid) return <Navigate to="/login" replace />;
     return children;
 }
 
 function App() {
     return (
-        <BrowserRouter>
-            <Navbar />
-            <Routes>
-                <Route path="/" element={<LoginPage />} />
-                <Route path="/idk" element={<p> fuck yeah</p>} />
-                <Route path="/shit" element={<ErrorPage />} />
-            </Routes>
-        </BrowserRouter>
+        <>
+            <BrowserRouter>
+                <Navbar />
+                <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/login" element={<LoginPage />} />
+
+                    <Route
+                        path="/idk"
+                        element={
+                            <RequireAuth requiredRole="user">
+                                <p> fuck yeah</p>
+                            </RequireAuth>
+                        }
+                    />
+                    <Route path="/shit" element={<ErrorPage />} />
+                </Routes>
+            </BrowserRouter>
+        </>
     );
 }
 

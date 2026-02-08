@@ -5,6 +5,4 @@ const api = axios.create({
     withCredentials: true, // if you use cookies / sessions
 });
 
-export const login = (data) => api.post("/auth/login", data);
-
 export default api;

@@ -1,13 +1,19 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { AuthContext } from "../util/AuthContext";
+import { useContext } from "react";
 
 const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    // const [username, setUsername] = useState("");
-    // const [userRole, setRole] = useState("");
+    const { user, loading } = useContext(AuthContext);
 
-    useEffect(() => {}, [location]);
+    let userName = user ? user.userName : "Guest";
+    // try {
+    //     const userName = user.userName;
+    // } catch {
+    //     navigate("/login");
+    // }
 
     const linkStyle = (paths) => {
         const match = Array.isArray(paths)
@@ -47,16 +53,41 @@ const Navbar = () => {
                 marginRight: "4px",
             }}
         >
-            <div>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flex: "0 1 auto",
+                }}
+            >
                 <Link to="/" style={linkStyle("/")}>
                     Home
                 </Link>
-            </div>
-            <div>
-                <Link to="/" style={linkStyle("/")}>
-                    Home
+
+                <Link to="/logWorkout" style={linkStyle("/logWorkout")}>
+                    Log Your Workout
                 </Link>
             </div>
+            <div style={{ flex: "0.95 0 auto" }} />
+
+            {userName && (
+                <div
+                    style={{
+                        color: "#00ffea",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                        maxWidth: "200px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        cursor: "pointer",
+                    }}
+                    onClick={handleUsernameClick}
+                    title="Go to Login"
+                >
+                    {userName}
+                </div>
+            )}
         </nav>
     );
 };

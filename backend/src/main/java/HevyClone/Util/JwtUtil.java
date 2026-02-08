@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Fallback;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -50,12 +51,17 @@ public class JwtUtil {
     }
 
     public Boolean validateToken(String token ) {
-        Claims claims = extractAllClaims(token);
-        String subject = claims.getSubject();
-        final String extractedUsername = claims.get("name").toString();
+        try{
+            Claims claims = extractAllClaims(token);
+            return (!isTokenExpired(token));
+        }
+        catch (Exception e){
+            return false;
+        }
 
 
-        return (extractedUsername.equals(subject) && !isTokenExpired(token));
+
+
     }
 
 

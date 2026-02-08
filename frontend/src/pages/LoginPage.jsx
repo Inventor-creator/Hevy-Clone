@@ -1,20 +1,24 @@
 import { useState } from "react";
+import api from "../services/api";
 
 const LoginPage = () => {
     localStorage.clear();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [disabled, setDisabled] = useState(false);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         window.location.href =
             "http://localhost:8080/oauth2/authorization/google";
+
+        setDisabled(true);
     };
 
     return (
         <>
             <p>testing login page</p>
             <h1>somethings</h1>
-            <button onClick={handleLogin}>Login</button>
+            <button onClick={handleLogin} disabled={disabled}>
+                Login
+            </button>
         </>
     );
 };

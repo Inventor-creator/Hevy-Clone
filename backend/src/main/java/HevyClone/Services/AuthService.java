@@ -7,10 +7,13 @@ import HevyClone.ReturnObjects.AuthProviderReturnUser;
 import HevyClone.Tables.AuthProviderIds;
 import HevyClone.Tables.User;
 import HevyClone.Util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,6 +25,7 @@ public class AuthService {
 
     @Autowired
     AuthProviderIdRepo aIdRepo;
+
     @Autowired
     UserRepo uRepo;
 
@@ -64,6 +68,38 @@ public class AuthService {
         cookie.setMaxAge(60 * 120);
 
         return cookie;
+
+    }
+
+    public Map<String , Object> getUserStuff(Cookie  cookie){
+
+
+        String value = cookie.getValue();
+
+        if(!jwtUtils.validateToken(value)){
+            return null;
+        }
+
+        //add more shit when needed
+        Claims claims = jwtUtils.extractAllClaims(value);
+
+        try {
+            Number userId = claims.get("userId", Number.class);
+
+            Map<String, Object> map = new HashMap<>();
+            User dbUser = uRepo.getReferenceById(userId.longValue());
+
+
+
+            map.put("userId", userId.longValue());
+            map.put("userName" , dbUser.getName());
+            map.put("role" , "user");
+
+            return map;
+        }catch(Exception e){
+            return null;
+        }
+
 
     }
 
